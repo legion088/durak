@@ -91,7 +91,7 @@ class Game:
     def info(self) -> None:
         """Выводим информацию о ходе игры"""
         for player in self.players:
-            if len(player.cards) == 6:
+            if len(player.cards) == 10:
                 print(f"Карты {player.name} {player.show_cards()}")
             else:
                 print(f"Осталось карт {player.name} {player.show_cards()}")
@@ -104,7 +104,7 @@ class Game:
 
         self.deck.shuffle()
         self.players = [
-            Players(f"Игрок {num}:", self.deck.draw(6))
+            Players(f"Игрок {num}:", self.deck.draw(10))
             for num, pl in enumerate(range(players), start=1)
         ]
 
