@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffle, choice
 
 
 class Players:
@@ -6,11 +6,26 @@ class Players:
         self.name = name
         self.cards = cards
 
+    def throw_card(self, cards_table) -> object:
+        """Подбрасываем карту"""
+        cards_table = [
+            player_card
+            for player_card in self.cards
+            for card_table in cards_table
+            if player_card.value == card_table.value
+        ]
+        return choice(self.cards) if not cards_table else choice(cards_table)
+
+    def close_card(self, card1) -> object:
+        """Отбиваемся"""
+        for card2 in self.cards:
+            if not (card1.equal_suit(card2) and card1.less(card2)):
+                continue
+            return card2
+
     def delete_card(self, card) -> None:
         """Удаляем карту"""
-        cards = self.cards.copy()
-        cards.remove(card)
-        self.cards = cards
+        self.cards.remove(card)
 
     def show_cards(self) -> str:
         """Показываем карты игрока"""
@@ -18,8 +33,8 @@ class Players:
 
 
 class Card:
-    SUIT = ['♠', '♣', '♦', '♥']
-    VALUE = [None, None, '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+    SUIT = ['\u2661', '\u2662', '♣', '♠']  # Порядок  ♥ ♦ ♣ ♠
+    VALUE = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
     def __init__(self, value, suit) -> None:
         self.value = value
@@ -61,7 +76,7 @@ class Card:
 class Deck:
     def __init__(self) -> None:
         self.cards = [
-            Card(value, suit) for value in range(2, 15) for suit in range(4)
+            Card(v, s) for v in range(len(Card.VALUE)) for s in range(len(Card.SUIT))
         ]
 
     def shuffle(self) -> None:
@@ -85,8 +100,8 @@ class Deck:
 
 class Game:
     def __init__(self) -> None:
-        self.deck = Deck()
         self.players = None
+        self.deck = Deck()
 
     def info(self) -> None:
         """Выводим информацию о ходе игры"""
@@ -95,7 +110,7 @@ class Game:
                 print(f"Карты {player.name} {player.show_cards()}")
             else:
                 print(f"Осталось карт {player.name} {player.show_cards()}")
-
+        print()
 
     def start_game(self, players=2) -> None:
         """Запускаем игру"""
@@ -107,33 +122,35 @@ class Game:
             Players(f"Игрок {num}:", self.deck.draw(10))
             for num, pl in enumerate(range(players), start=1)
         ]
-
         player1, player2 = self.players
-
-        self.deck.show()
         self.info()
-        print()
+        card1 = choice(player1.cards)
 
-        for step, card1 in enumerate(player1.cards, start=1):
-            player1.delete_card(card1)
-            print(f"Ход {step}\n{player1.name} {card1.to_str()}")
-
-            for card2 in player2.cards:
-                if card1.equal_suit(card2) and card1.less(card2):
-                    print(f"{player2.name} {card2.to_str()} (покрыл)")
-                    player2.delete_card(card2)
-                    self.info()
-                    break
-            else:
-                print(f"{player2.name} не смог покрыть\n{player1.name} выиграл.")
+        step = 0
+        while True:
+            step += 1
+            print(f"Ход {step}")
+            print(player1.name, card1.to_str())
+            card2 = player2.close_card(card1)
+            if card2 is None:
+                print(f"{player2.name} не смог покрыть\n{player1.name} выиграл")
                 break
-            print()
+
+            print(player2.name, card2.to_str(), "(покрыл)")
+            player1.delete_card(card1), player2.delete_card(card2)
+
+            if not player1.cards:
+                print(f"{player2.name} выиграл")
+                break
+
+            self.info()
+            card1 = player1.throw_card(cards_table=(card1, card2))
 
 
 if __name__ == '__main__':
     """Генерируем несколько случайных игр"""
-    for n in range(1, 10):
+    for n in range(100):
         print(f"Случай {n}")
-        print("=" * 200)
-        Game().start_game(players=2)
+        print("=" * 100)
+        Game().start_game(2)
         print()
