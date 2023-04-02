@@ -124,18 +124,18 @@ class Game:
         ]
         player1, player2 = self.players
         self.info()
-        card1 = choice(player1.cards)
 
+        card1 = choice(player1.cards)
         step = 0
         while True:
             step += 1
             print(f"Ход {step}")
             print(player1.name, card1.to_str())
             card2 = player2.close_card(card1)
+
             if card2 is None:
                 print(f"{player2.name} не смог покрыть\n{player1.name} выиграл")
                 break
-
             print(player2.name, card2.to_str(), "(покрыл)")
             player1.delete_card(card1), player2.delete_card(card2)
 
@@ -149,7 +149,7 @@ class Game:
 
 if __name__ == '__main__':
     """Генерируем несколько случайных игр"""
-    for n in range(100):
+    for n in range(1, 100):
         print(f"Случай {n}")
         print("=" * 100)
         Game().start_game(2)
