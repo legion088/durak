@@ -18,18 +18,25 @@ class Players:
 
     def close_card(self, card1) -> object:
         """Отбиваемся"""
+
         for card2 in self.cards:
-            if not (card1.equal_suit(card2) and card1.less(card2)):
-                continue
-            return card2
+            a = [card1.value, card2.value]
+            b = [card1.suit, card2.suit]
+            if card1.equal_suit(card2) and card1.less(card2):
+                return card2
+            elif card1.value == card2.value:
+                if card1.suit > card2.suit:
+                    return card2.to_str()
 
-    def delete_card(self, card) -> None:
-        """Удаляем карту"""
-        self.cards.remove(card)
 
-    def show_cards(self) -> str:
-        """Показываем карты игрока"""
-        return " ".join([card.to_str() for card in self.cards])
+def delete_card(self, card) -> None:
+    """Удаляем карту"""
+    self.cards.remove(card)
+
+
+def show_cards(self) -> str:
+    """Показываем карты игрока"""
+    return " ".join([card.to_str() for card in self.cards])
 
 
 class Card:
@@ -147,10 +154,17 @@ class Game:
             card1 = player1.throw_card(cards_table=(card1, card2))
 
 
-if __name__ == '__main__':
-    """Генерируем несколько случайных игр"""
-    for n in range(1, 100):
-        print(f"Случай {n}")
-        print("=" * 100)
-        Game().start_game(2)
-        print()
+deck = Deck()
+card1 = deck.cards[42]
+card2 = deck.cards[43]
+print(card1.to_str(), card2.to_str())
+
+print(Players("", [card1]).close_card(card2))
+
+# if __name__ == '__main__':
+#     """Генерируем несколько случайных игр"""
+#     for n in range(1, 100):
+#         print(f"Случай {n}")
+#         print("=" * 100)
+#         Game().start_game(2)
+#         print()
