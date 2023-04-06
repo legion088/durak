@@ -14,14 +14,15 @@ class Players:
             for card_table in cards_table
             if player_card.value == card_table.value
         ]
-        return choice(self.cards) if not cards_table else choice(cards_table)
+        return None if not cards_table else choice(cards_table)
 
     def close_card(self, card1) -> object:
         """Отбиваемся"""
         for card2 in self.cards:
-            if not (card1.equal_suit(card2) and card1.less(card2)):
-                continue
-            return card2
+            if card1.equal_suit(card2) and card1.less(card2):
+                return card2
+            elif card1.value == card2.value and card1.less(card2):
+                return card2
 
     def delete_card(self, card) -> None:
         """Удаляем карту"""
@@ -33,17 +34,20 @@ class Players:
 
 
 class Card:
-    SUIT = ['♠', '♣', '♦', '♥']  # Порядок  ♠ ♣ ♦ ♥
+    SUIT = ['♠', '♣', '♦', '♥']
     VALUE = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
     def __init__(self, value, suit) -> None:
         self.value = value
         self.suit = suit
+        self.amount = (
+            self.VALUE.index(self.value),
+            self.SUIT.index(self.suit)
+        )
 
     def to_str(self) -> str:
         """Возвращает строковое представление карты в виде строки"""
-        return "{}{}".format(self.VALUE[self.value],
-                             self.SUIT[self.suit])
+        return f"{self.value}{self.suit}"
 
     def equal_suit(self, card) -> bool:
         """Проверяет, одинаковые ли масти у карт"""
@@ -56,27 +60,21 @@ class Card:
         Возвращает True, если карта у которой вызван метод больше,
         чем карта которую передали в качестве параметра
         """
-        if self.value > card.value:
+        if self.amount > card.amount:
             return True
-        if self.value == card.value:
-            if self.suit > card.suit:
-                return True
         return False
 
     def less(self, card) -> bool:
         """Возвращает True если ли карта младше, чем карта в параметре"""
-        if self.value < card.value:
+        if self.amount < card.amount:
             return True
-        if self.value == card.value:
-            if self.suit < card.suit:
-                return True
         return False
 
 
 class Deck:
     def __init__(self) -> None:
         self.cards = [
-            Card(v, s) for v in range(len(Card.VALUE)) for s in range(len(Card.SUIT))
+            Card(v, s) for v in Card.VALUE for s in Card.SUIT
         ]
 
     def shuffle(self) -> None:
@@ -123,6 +121,7 @@ class Game:
             for num, pl in enumerate(range(players), start=1)
         ]
         player1, player2 = self.players
+        self.deck.show()
         self.info()
 
         card1 = choice(player1.cards)
@@ -138,19 +137,20 @@ class Game:
                 break
             print(player2.name, card2.to_str(), "(покрыл)")
             player1.delete_card(card1), player2.delete_card(card2)
+            card1 = player1.throw_card([card1, card2])
 
-            if not player1.cards:
+            if not player1.cards or card1 is None:
                 print(f"{player2.name} выиграл")
                 break
 
             self.info()
-            card1 = player1.throw_card(cards_table=(card1, card2))
+
 
 
 if __name__ == '__main__':
     """Генерируем несколько случайных игр"""
     for n in range(1, 100):
         print(f"Случай {n}")
-        print("=" * 100)
+        print("=" * 50)
         Game().start_game(2)
         print()
