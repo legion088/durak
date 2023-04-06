@@ -148,13 +148,6 @@ class Game:
 
 
 if __name__ == '__main__':
-    exam = Players("", [Card("Q", "♥")]).close_card(Card("Q", "♦"))
-    print(f"""
-Пример из замечания с исправлением: Q♥ > Q♦
-Players("", [Card("Q", "♥")]).close_card(Card("Q", "♦"))
-{exam.to_str()}
-    """)
-
     """Генерируем несколько случайных игр"""
     for n in range(1, 100):
         print(f"Случай {n}")
