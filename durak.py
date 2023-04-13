@@ -2,7 +2,7 @@ from random import shuffle, choice
 
 
 class Players:
-    def __init__(self, name, cards) -> None:
+    def __init__(self, name, cards):
         self.name = name
         self.cards = cards
 
@@ -24,7 +24,7 @@ class Players:
             elif card1.value == card2.value and card1.less(card2):
                 return card2
 
-    def delete_card(self, card) -> None:
+    def delete_card(self, card):
         """Удаляем карту"""
         self.cards.remove(card)
 
@@ -37,7 +37,7 @@ class Card:
     SUIT = ['♠', '♣', '♦', '♥']
     VALUE = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
-    def __init__(self, value, suit) -> None:
+    def __init__(self, value, suit):
         self.value = value
         self.suit = suit
         self.amount = (
@@ -72,12 +72,12 @@ class Card:
 
 
 class Deck:
-    def __init__(self) -> None:
+    def __init__(self):
         self.cards = [
             Card(v, s) for v in Card.VALUE for s in Card.SUIT
         ]
 
-    def shuffle(self) -> None:
+    def shuffle(self):
         """Перемешивает колоду, располагая карты в случайном порядке"""
         shuffle(self.cards)
 
@@ -90,18 +90,18 @@ class Deck:
         self.cards = [c for c in self.cards if c not in cards]
         return cards
 
-    def show(self) -> None:
+    def show(self):
         """Отображает все карты колоды в формате"""
         cards = ["{}".format(card.to_str()) for card in self.cards]
         print("deck[{}]: {}".format(len(cards), cards))
 
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(self):
         self.players = None
         self.deck = Deck()
 
-    def info(self) -> None:
+    def info(self):
         """Выводим информацию о ходе игры"""
         for player in self.players:
             if len(player.cards) == 10:
@@ -110,7 +110,7 @@ class Game:
                 print(f"Осталось карт {player.name} {player.show_cards()}")
         print()
 
-    def start_game(self, players=2) -> None:
+    def start_game(self, players=2):
         """Запускаем игру"""
         if players < 2 or players > 2:
             raise ValueError("Игра только для двух игроков!")
